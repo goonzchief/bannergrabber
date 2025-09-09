@@ -5,8 +5,6 @@ import random
 import re
 import requests
 from datetime import datetime
-
-# List of User-Agent strings for randomization
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.1 Safari/605.1.15",
@@ -14,7 +12,6 @@ USER_AGENTS = [
     "Mozilla/5.0 (Linux; Android 10; SM-A515F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.127 Mobile Safari/537.36",
 ]
 
-# List of common subdomains to brute-force
 COMMON_SUBDOMAINS = [
     "www", "mail", "ftp", "webmail", "ns1", "ns2", "blog", "localhost", "cpanel", "shop",
     "dev", "api", "test", "forum", "vpn", "beta", "admin", "cdn", "imap", "smtp"
@@ -113,7 +110,6 @@ def check_wordpress(host, output_file):
                 print("[WordPress Version] Could not determine version.")
                 write_output(output_file, "[WordPress Version] Could not determine version.")
             
-            # Check for common plugins
             plugins = ["/wp-content/plugins/akismet/akismet.php", "/wp-content/plugins/elementor/frontend.min.css"]
             for plugin in plugins:
                 plugin_url = f"http://{host}{plugin}"
@@ -123,7 +119,6 @@ def check_wordpress(host, output_file):
                     print(plugin_info)
                     write_output(output_file, plugin_info)
 
-            # Check for common themes
             themes = ["/wp-content/themes/twentytwentyone/style.css", "/wp-content/themes/twentytwentytwo/style.css"]
             for theme in themes:
                 theme_url = f"http://{host}{theme}"
@@ -132,8 +127,6 @@ def check_wordpress(host, output_file):
                     theme_info = f"[Theme Found] {theme}"
                     print(theme_info)
                     write_output(output_file, theme_info)
-
-            # List users
             list_wordpress_users(host, output_file)
 
     except Exception as e:
@@ -169,38 +162,32 @@ def advanced_banner_grab(host, output_file):
     """ Advanced banner grab that uses multiple protocols """
     banners = {}
     
-    # HTTP Banner
     print("[*] Grabbing HTTP banner...")
     write_output(output_file, "[*] Grabbing HTTP banner...")
     http_banner = grab_http_banner(host)
     banners["HTTP"] = http_banner
     
-    # HTTPS Banner
     print("[*] Grabbing HTTPS banner...")
     write_output(output_file, "[*] Grabbing HTTPS banner...")
     https_banner = grab_https_banner(host)
     banners["HTTPS"] = https_banner
-    
-    # FTP Banner
+
     print("[*] Grabbing FTP banner...")
     write_output(output_file, "[*] Grabbing FTP banner...")
     ftp_banner = grab_ftp_banner(host)
     banners["FTP"] = ftp_banner
-    
-    # SMTP Banner
+
     print("[*] Grabbing SMTP banner...")
     write_output(output_file, "[*] Grabbing SMTP banner...")
     smtp_banner = grab_smtp_banner(host)
     banners["SMTP"] = smtp_banner
-    
-    # SSH Banner
+
     print("[*] Grabbing SSH banner...")
     write_output(output_file, "[*] Grabbing SSH banner...")
     ssh_banner = grab_ssh_banner(host)
     banners["SSH"] = ssh_banner
     
     return banners
-
 def find_subdomains(host, output_file):
     """ Brute-force common subdomains """
     print("[*] Starting subdomain search...")
@@ -227,7 +214,6 @@ def write_output(output_file, text):
     with open(output_file, "a", encoding="utf-8") as f:
         f.write(f"{text}\n")
 
-
 def main():
     parser = argparse.ArgumentParser(description="Advanced Banner Grabbing Tool with WPScan Features and Subdomain Finder")
     parser.add_argument('target', help="Domain or IP address to grab banners from")
@@ -235,10 +221,8 @@ def main():
 
     target = args.target
 
-    # Generate the output filename based on the target
     output_file = f"{target}-output.txt"
 
-    # Clear previous output and write header with timestamp
     with open(output_file, "w") as f:
         f.write(f"Banner Grabbing Results for {target} - {datetime.now()}\n")
         f.write("="*60 + "\n")
@@ -257,10 +241,8 @@ def main():
             print(f"[OS Detected] {os_info}")
             write_output(output_file, f"[OS Detected] {os_info}")
 
-    check_wordpress(target, output_file)  # Check for WordPress features
-
-    # Find subdomains
+    check_wordpress(target, output_file)  
     find_subdomains(target, output_file)
-
+    
 if __name__ == "__main__":
     main()
